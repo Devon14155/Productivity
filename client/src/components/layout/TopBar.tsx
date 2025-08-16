@@ -14,9 +14,11 @@ import {
   Plus,
   Globe,
   Sun,
-  Moon
+  Moon,
+  Crosshair
 } from 'lucide-react';
 import { supportedLanguages } from '@/lib/i18n';
+import { GlobalSearch } from './GlobalSearch';
 
 interface TopBarProps {
   title: string;
@@ -25,7 +27,7 @@ interface TopBarProps {
 export function TopBar({ title }: TopBarProps) {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
-  const { setQuickAddOpen, setMobileMenuOpen } = useAppStore();
+  const { setQuickAddOpen, setMobileMenuOpen, enterFocusMode } = useAppStore();
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
@@ -57,6 +59,19 @@ export function TopBar({ title }: TopBarProps) {
       </div>
 
       <div className="flex items-center space-x-3">
+        <GlobalSearch />
+
+        {/* Focus Mode Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden sm:flex items-center"
+          onClick={() => enterFocusMode()}
+        >
+          <Crosshair className="w-4 h-4 mr-2" />
+          <span>Focus</span>
+        </Button>
+
         {/* Quick Add Button */}
         <Button
           size="sm"

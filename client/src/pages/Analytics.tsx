@@ -6,6 +6,9 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { StreakCalendar } from '@/components/analytics/StreakCalendar';
+import { CategoryBreakdownChart } from '@/components/analytics/CategoryBreakdownChart';
+import { SmartSuggestions } from '@/components/analytics/SmartSuggestions';
+import { TimelineReplayView } from '@/components/analytics/TimelineReplayView';
 import {
   BarChart3,
   TrendingUp,
@@ -239,17 +242,21 @@ export function Analytics() {
 
       {/* Analytics Tabs */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="tasks">Tasks</TabsTrigger>
           <TabsTrigger value="goals">Goals</TabsTrigger>
           <TabsTrigger value="streaks">Streaks</TabsTrigger>
+          <TabsTrigger value="replay">Replay</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <ProductivityChart />
-            <ProjectBreakdown />
+            <div className="space-y-6">
+              <ProductivityChart />
+              <ProjectBreakdown />
+            </div>
+            <SmartSuggestions />
           </div>
         </TabsContent>
         
@@ -263,22 +270,16 @@ export function Analytics() {
         <TabsContent value="goals" className="mt-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <GoalProgress />
-            <Card>
-              <CardHeader>
-                <CardTitle>Goal Categories</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Award className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">{t('common.coming_soon')}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <CategoryBreakdownChart />
           </div>
         </TabsContent>
         
         <TabsContent value="streaks" className="mt-6">
           <StreakCalendar />
+        </TabsContent>
+
+        <TabsContent value="replay" className="mt-6">
+          <TimelineReplayView />
         </TabsContent>
       </Tabs>
     </div>
