@@ -14,6 +14,7 @@ import {
   Check,
   ArrowRight
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export function Dashboard() {
   const { t } = useTranslation();
@@ -53,6 +54,7 @@ export function Dashboard() {
       title: t('dashboard.tasks_due_today'),
       value: todayTasks.length.toString(),
       change: taskStats.overdue > 0 ? t('dashboard.overdue_warning') : t('dashboard.on_track'),
+      isWarning: taskStats.overdue > 0,
       icon: CheckSquare,
       color: 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
     },
@@ -88,29 +90,38 @@ export function Dashboard() {
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          visible: { transition: { staggerChildren: 0.1 } }
+        }}
+      >
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={index}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-hierarchy-small text-muted-foreground">{stat.title}</p>
-                    <p className="text-hierarchy-1 mt-1">{stat.value}</p>
+            <motion.div key={index} variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-hierarchy-small text-muted-foreground">{stat.title}</p>
+                      <p className="text-hierarchy-1 mt-1">{stat.value}</p>
+                    </div>
+                    <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+                      <Icon className="w-6 h-6" />
+                    </div>
                   </div>
-                  <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
-                    <Icon className="w-6 h-6" />
+                  <div className="flex items-center mt-4 text-hierarchy-small">
+                    <span className={`${stat.isWarning ? 'text-destructive' : 'text-emerald-600 dark:text-emerald-400'} font-medium`}>{stat.change}</span>
                   </div>
-                </div>
-                <div className="flex items-center mt-4 text-hierarchy-small">
-                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">{stat.change}</span>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -141,14 +152,10 @@ export function Dashboard() {
                     className="flex items-center space-x-3 p-3 rounded-lg hover:bg-accent transition-colors group"
                   >
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      className={`w-5 h-5 rounded border-2 p-0 ${
-                        task.completed
-                          ? 'border-primary bg-primary text-primary-foreground'
-                          : 'border-muted-foreground hover:border-primary'
-                      }`}
+                      variant={task.completed ? 'default' : 'outline'}
+                      size="icon"
                       onClick={() => toggleTaskCompletion(task.id)}
+                      className="w-5 h-5 rounded-full"
                     >
                       {task.completed && <Check className="w-3 h-3" />}
                     </Button>
@@ -159,7 +166,7 @@ export function Dashboard() {
                         {task.title}
                       </p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-xs text-muted-foreground">Work</span>
+                        <span className="text-xs text-muted-foreground">{t('common.work')}</span>
                         {task.dueDate && (
                           <span className={`text-xs ${
                             isOverdue(task.dueDate) ? 'text-destructive' : 'text-muted-foreground'
@@ -235,7 +242,7 @@ export function Dashboard() {
                     <div className="flex items-center justify-between mb-2">
                       <p className="text-hierarchy-small font-medium">{goal.title}</p>
                       <span className="text-xs text-muted-foreground">
-                        {goal.currentValue}/{goal.targetValue || '∞'}
+                        {goal.currentValue}/{goal.targetValue || t('common.infinity')}
                       </span>
                     </div>
                     <Progress 
@@ -272,7 +279,7 @@ export function Dashboard() {
                     <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-hierarchy-small">Completed "{task.title}"</p>
+                    <p className="text-hierarchy-small">{t('dashboard.completed_task_activity', { title: task.title })}</p>
                     <p className="text-xs text-muted-foreground">
                       {formatTime(task.updatedAt)}
                     </p>
@@ -314,7 +321,7 @@ export function Dashboard() {
                         <Progress value={(day.count / 15) * 100} className="h-2" />
                       </div>
                       <span className="text-hierarchy-small font-medium">
-                        {day.count} tasks
+                        {t('analytics.task_count', { count: day.count })}
                       </span>
                     </div>
                   ))}
